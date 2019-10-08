@@ -1,0 +1,77 @@
+version: '3'
+services:
+  mysql-server-1:
+    env_file:
+      - mysql-server.env
+    image: mysql/enterprise-server:8.0
+    ports:
+      - "3301:3306"
+      - "2222:22"
+    command: ["mysqld","--server_id=1","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--log_bin","--log_slave_updates=ON","--master_info_repository=TABLE","--relay_log_info_repository=TABLE","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password","--lower_case_table_names=1", "--audit_log_format=JSON", "--audit_log_file=audit.json", "--audit-log-policy=LOGIN", "--log-error-verbosity=1", "--performance_schema_consumer_events_statements_history_long=ON","--performance_schema_events_statements_history_long_size=16000", "--early-plugin-load=keyring_file.so", "--keyring_file_data=/var/lib/mysql-keyring/keyring", "--plugin-load-add=thread_pool.so;audit_log.so"]
+    volumes:
+      - ~/Docker/PersistedMounts/mysql-server-1:/var/lib/mysql
+      - ~/Docker/SharedSource:/usr1/shared
+      - ~/Docker/SharedBackup:/usr1/backup
+  mysql-server-2:
+    env_file:
+      - mysql-server.env
+    image: mysql/enterprise-server:8.0
+    ports:
+      - "3302:3306"
+    command: ["mysqld","--server_id=2","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--log_bin","--log_slave_updates=ON","--master_info_repository=TABLE","--relay_log_info_repository=TABLE","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password","--lower_case_table_names=1",  "--audit_log_format=JSON", "--audit_log_file=audit.json", "--audit-log-policy=LOGIN", "--log-error-verbosity=1",  "--performance_schema_consumer_events_statements_history_long=ON","--performance_schema_events_statements_history_long_size=16000", "--early-plugin-load=keyring_file.so", "--keyring_file_data=/var/lib/mysql-keyring/keyring", "--plugin-load-add=thread_pool.so;audit_log.so"]
+    volumes:
+      - ~/Docker/PersistedMounts/mysql-server-2:/var/lib/mysql
+      - ~/Docker/SharedSource:/usr1/shared
+      - ~/Docker/SharedBackup:/usr1/backup
+  mysql-server-3:
+    env_file:
+      - mysql-server.env
+    image: mysql/enterprise-server:8.0
+    command: ["mysqld","--server_id=3","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--log_bin","--log_slave_updates=ON","--master_info_repository=TABLE","--relay_log_info_repository=TABLE","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password","--lower_case_table_names=1",  "--audit_log_format=JSON", "--audit_log_file=audit.json", "--audit-log-policy=LOGIN", "--log-error-verbosity=1",  "--performance_schema_consumer_events_statements_history_long=ON","--performance_schema_events_statements_history_long_size=16000", "--early-plugin-load=keyring_file.so", "--keyring_file_data=/var/lib/mysql-keyring/keyring", "--plugin-load-add=thread_pool.so;audit_log.so"]
+    volumes:
+      - ~/Docker/PersistedMounts/mysql-server-3:/var/lib/mysql
+      - ~/Docker/SharedSource:/usr1/shared
+      - ~/Docker/SharedBackup:/usr1/backup
+    ports:
+      - "3303:3306"
+  mysql-server-4:
+    env_file:
+      - mysql-server.env
+    image: mysql/enterprise-server:8.0
+    command: ["mysqld","--server_id=4","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password","--lower_case_table_names=1", "--log-error-verbosity=3",  "--performance_schema_consumer_events_statements_history_long=ON","--performance_schema_events_statements_history_long_size=16000", "--early-plugin-load=keyring_file.so", "--keyring_file_data=/var/lib/mysql-keyring/keyring", "--innodb_buffer_pool_size=512000000",  "--innodb_flush_method=O_DIRECT", "--mysqlx_max_allowed_packet=1073741824"]
+    volumes:
+      - ~/Docker/PersistedMounts/mysql-server-4:/var/lib/mysql
+      - ~/Docker/SharedSource:/usr1/shared
+      - ~/Docker/SharedBackup:/usr1/backup
+    ports:
+      - "3304:3306"
+      - "33064:33060"
+  mysql-shell:
+    env_file:
+      - mysql-shell.env
+    image: neumayer/mysql-shell-batch:latest
+    volumes:
+        - ./scripts/:/scripts/
+        - ~/Docker/SharedSource:/usr1/shared
+        - ~/Docker/SharedBackup:/usr1/backup
+    depends_on:
+      - mysql-server-1
+      - mysql-server-2
+      - mysql-server-3
+  mysql-router:
+    env_file:
+      - mysql-router.env
+    image: mysql/mysql-router:latest
+    volumes:
+        - ./scripts/:/scripts/
+        - ~/Docker/SharedSource:/usr1/shared
+        - ~/Docker/SharedBackup:/usr1/backup
+    ports:
+      - "6446:6446"
+    depends_on:
+      - mysql-server-1
+      - mysql-server-2
+      - mysql-server-3
+      - mysql-shell
+    restart: on-failure
+
