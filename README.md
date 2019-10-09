@@ -1,4 +1,4 @@
-# MySQL_Enterprise_Edition_InnoDB_Cluster_Docker_Compose
+# MySQL_Enterprise_InnoDB_Cluster_Docker_Compose
  A MySQL InnoDB Cluster with Enterprise Security Features
 
 This example does not show how to upgrade the base MOS (http://my.oracle.com) to 8.0.17
