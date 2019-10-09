@@ -3,11 +3,11 @@
 
 This example does not show how to upgrade the base MOS (http://my.oracle.com) to 8.0.17
 
-Installation assumes you are using from '~/Docker/'
+Installation assumes you are using from "~/Docker/"
 
 RPM's are saved outside of this project so as not to violate Oracle MySQL Enterprise Edition distribution restrictions. 
 
-By design the example uses a shared source for RPM's, BIN files or scripts. This is the alias '~/Docker/SharedSource/' that points to '~/DockerSharedSource/'
+By design the example uses a shared source for RPM's, BIN files or scripts. This is the alias "~/Docker/SharedSource/" that points to "~/DockerSharedSource/"
 
 Usefull Things to Do -hint hint
 
