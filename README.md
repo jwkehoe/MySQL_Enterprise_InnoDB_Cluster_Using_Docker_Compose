@@ -20,3 +20,6 @@ Usefull Things to Do -hint hint
 5. Configure a bridge network TUN for remote management of audit log, firewall and backup
 6. Update documentation template
 9. Create housekeeping scripts
+
+
+Credit where credit is due. Thnaks to Robert Neumayer and his work creation which I heavily relied upon. 
